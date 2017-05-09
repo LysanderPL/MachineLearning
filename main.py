@@ -1,25 +1,30 @@
-import numpy
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-from keras.utils import plot_model
 import numpy as np
-
-model = Sequential()
-model.add(Dense(32, activation='relu', input_dim=100))
-model.add(Dense(1, activation='sigmoid'))
-model.compile(optimizer='rmsprop',
-              loss='binary_crossentropy',
-              metrics=['accuracy'])
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
 
 # Generate dummy data
-data = np.random.random((1000, 100))
-labels = np.random.randint(2, size=(1000, 1))
+x_train = np.random.random((1000, 20))
+y_train = np.random.randint(2, size=(1000, 1))
 
+x_test = np.random.random((1000, 20))
+y_test = np.random.randint(2, size=(1000, 1))
 
-# Train the model, iterating on the data in batches of 32 samples
-model.fit(data, labels, epochs=10, batch_size=32)
+model = Sequential()
+model.add(Dense(64, input_dim=20, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(1, activation='sigmoid'))
 
-
+model.compile(loss='binary_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy'])
 
 model.summary()
-print(model.to_yaml())
+
+model.fit(x_train, y_train,
+          epochs=20,
+          batch_size=128)
+score = model.evaluate(x_test, y_test, batch_size=128)
+
+print("Scores", score)
